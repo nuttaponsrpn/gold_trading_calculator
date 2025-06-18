@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องคำนวณ Trading ทอง</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .calculator-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #FFD700;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+
+        button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255,165,0,0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,165,0,0.4);
+        }
+
+        .result {
+            background: linear-gradient(135deg, #f6f9fc 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 5px solid #FFD700;
+        }
+
+        .profit {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .loss {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .summary h3 {
+            margin-bottom: 15px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ เครื่องคำนวณ Trading ทอง</h1>
+        
+        <!-- การคำนวณ Single Trade -->
+        <div class="calculator-section">
+            <h2 class="section-title">💰 คำนวณกำไร/ขาดทุน (Single Trade)</h2>
+            <div class="input-group">
+                <div class="form-group">
+                    <label>ราคาซื้อ ($)</label>
+                    <input type="number" id="buyPrice" value="3300" step="0.01" oninput="calculateSingleTrade()">
+                </div>
+                <div class="form-group">
+                    <label>ราคาปัจจุบัน ($)</label>
+                    <input type="number" id="currentPrice" value="3000" step="0.01" oninput="calculateSingleTrade()">
+                </div>
+                <div class="form-group">
+                    <label>จำนวน Lot</label>
+                    <input type="number" id="lotSize" value="0.01" step="0.01" oninput="calculateSingleTrade()">
+                </div>
+            </div>
+            <div id="singleResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- การคำนวณ DCA -->
+        <div class="calculator-section">
+            <h2 class="section-title">📊 คำนวณ DCA (Dollar Cost Averaging)</h2>
+            <div class="input-group">
+                <div class="form-group">
+                    <label>ราคาเริ่มต้น ($)</label>
+                    <input type="number" id="startPrice" value="3100" step="0.01" oninput="calculateDCA()">
+                </div>
+                <div class="form-group">
+                    <label>ราคาสิ้นสุด ($)</label>
+                    <input type="number" id="endPrice" value="3300" step="0.01" oninput="calculateDCA()">
+                </div>
+                <div class="form-group">
+                    <label>ช่วงห่าง ($)</label>
+                    <input type="number" id="priceStep" value="10" step="0.01" oninput="calculateDCA()">
+                </div>
+                <div class="form-group">
+                    <label>จำนวน Lot ต่อครั้ง</label>
+                    <input type="number" id="dcaLotSize" value="0.01" step="0.01" oninput="calculateDCA()">
+                </div>
+                <div class="form-group">
+                    <label>ราคาปัจจุบัน ($)</label>
+                    <input type="number" id="dcaCurrentPrice" value="3000" step="0.01" oninput="calculateDCA()">
+                </div>
+            </div>
+            <div id="dcaResult" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // ค่าคงที่สำหรับการคำนวณทอง
+        const GOLD_CONTRACT_SIZE = 100; // 1 lot = 100 oz
+        const GOLD_TICK_VALUE = 10; // $10 per $1 move per lot
+
+        function calculateSingleTrade() {
+            const buyPrice = parseFloat(document.getElementById('buyPrice').value);
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const lotSize = parseFloat(document.getElementById('lotSize').value);
+
+            const resultDiv = document.getElementById('singleResult');
+            
+            if (isNaN(buyPrice) || isNaN(currentPrice) || isNaN(lotSize)) {
+                resultDiv.style.display = 'none';
+                return;
+            }
+
+            const priceDiff = currentPrice - buyPrice;
+            const profitLoss = priceDiff * lotSize * GOLD_TICK_VALUE;
+            const investment = buyPrice * lotSize * GOLD_CONTRACT_SIZE;
+
+            const profitLossClass = profitLoss >= 0 ? 'profit' : 'loss';
+            const profitLossText = profitLoss >= 0 ? 'กำไร' : 'ขาดทุน';
+
+            resultDiv.innerHTML = `
+                <h3>ผลการคำนวณ</h3>
+                <p><strong>ราคาซื้อ:</strong> ${buyPrice.toFixed(2)}</p>
+                <p><strong>ราคาปัจจุบัน:</strong> ${currentPrice.toFixed(2)}</p>
+                <p><strong>ความแตกต่างราคา:</strong> ${priceDiff.toFixed(2)}</p>
+                <p><strong>จำนวน Lot:</strong> ${lotSize}</p>
+                <p><strong>เงินลงทุน:</strong> ${investment.toFixed(2)}</p>
+                <p class="${profitLossClass}"><strong>${profitLossText}:</strong> ${Math.abs(profitLoss).toFixed(2)}</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+
+        function calculateDCA() {
+            const startPrice = parseFloat(document.getElementById('startPrice').value);
+            const endPrice = parseFloat(document.getElementById('endPrice').value);
+            const priceStep = parseFloat(document.getElementById('priceStep').value);
+            const lotSize = parseFloat(document.getElementById('dcaLotSize').value);
+            const currentPrice = parseFloat(document.getElementById('dcaCurrentPrice').value);
+
+            const resultDiv = document.getElementById('dcaResult');
+
+            if (isNaN(startPrice) || isNaN(endPrice) || isNaN(priceStep) || isNaN(lotSize) || isNaN(currentPrice)) {
+                resultDiv.style.display = 'none';
+                return;
+            }
+
+            if (startPrice >= endPrice || priceStep <= 0) {
+                resultDiv.innerHTML = '<div class="result"><p style="color: #dc3545;">❌ ราคาเริ่มต้นต้องน้อยกว่าราคาสิ้นสุด และช่วงห่างต้องมากกว่า 0</p></div>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            const trades = [];
+            let totalLots = 0;
+            let totalInvestment = 0;
+            let weightedAveragePrice = 0;
+
+            // สร้างรายการ trades
+            for (let price = startPrice; price <= endPrice; price += priceStep) {
+                const investment = price * lotSize * GOLD_CONTRACT_SIZE;
+                trades.push({
+                    price: price,
+                    lots: lotSize,
+                    investment: investment
+                });
+                totalLots += lotSize;
+                totalInvestment += investment;
+            }
+
+            // คำนวณราคาเฉลี่ย
+            weightedAveragePrice = totalInvestment / (totalLots * GOLD_CONTRACT_SIZE);
+
+            // คำนวณกำไร/ขาดทุนปัจจุบัน
+            const priceDiff = currentPrice - weightedAveragePrice;
+            const totalProfitLoss = priceDiff * (totalLots * 10) * GOLD_TICK_VALUE;
+
+            // สร้างตาราง
+            let tableHTML = `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ครั้งที่</th>
+                                <th>ราคาซื้อ ($)</th>
+                                <th>Lot</th>
+                                <th>เงินลงทุน ($)</th>
+                                <th>P/L ปัจจุบัน ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            trades.forEach((trade, index) => {
+                const tradeProfitLoss = (currentPrice - trade.price) * trade.lots * GOLD_TICK_VALUE;
+                const profitLossClass = tradeProfitLoss >= 0 ? 'profit' : 'loss';
+                
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${trade.price.toFixed(2)}</td>
+                        <td>${trade.lots}</td>
+                        <td>${trade.investment.toFixed(2)}</td>
+                        <td class="${profitLossClass}">${tradeProfitLoss.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            // สรุปผล
+            const profitLossClass = totalProfitLoss >= 0 ? 'profit' : 'loss';
+            const profitLossText = totalProfitLoss >= 0 ? 'กำไร' : 'ขาดทุน';
+
+            const summaryHTML = `
+                <div class="summary">
+                    <h3>📋 สรุปผล DCA</h3>
+                    <div class="summary-item">
+                        <span>จำนวนครั้งที่ซื้อ:</span>
+                        <span><strong>${trades.length} ครั้ง</strong></span>
+                    </div>
+                    <div class="summary-item">
+                        <span>รวม Lot:</span>
+                        <span><strong>${totalLots.toFixed(2)}</strong></span>
+                    </div>
+                    <div class="summary-item">
+                        <span>เงินลงทุนรวม:</span>
+                        <span><strong>${totalInvestment.toFixed(2)}</strong></span>
+                    </div>
+                    <div class="summary-item">
+                        <span>ราคาเฉลี่ย:</span>
+                        <span><strong>${weightedAveragePrice.toFixed(2)}</strong></span>
+                    </div>
+                    <div class="summary-item">
+                        <span>ราคาปัจจุบัน:</span>
+                        <span><strong>${currentPrice.toFixed(2)}</strong></span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="${profitLossClass}">${profitLossText} รวม:</span>
+                        <span class="${profitLossClass}"><strong>${Math.abs(totalProfitLoss).toFixed(2)}</strong></span>
+                    </div>
+                </div>
+            `;
+
+            resultDiv.innerHTML = summaryHTML + tableHTML;
+            resultDiv.style.display = 'block';
+        }
+
+        // เรียกใช้ฟังก์ชันเริ่มต้น
+        calculateSingleTrade();
+        calculateDCA();
+    </script>
+</body>
+</html>
