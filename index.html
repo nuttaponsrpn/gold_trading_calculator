@@ -246,7 +246,7 @@
     <script>
         // ค่าคงที่สำหรับการคำนวณทอง
         const GOLD_CONTRACT_SIZE = 100; // 1 lot = 100 oz
-        const GOLD_TICK_VALUE = 10; // $10 per $1 move per lot
+        const GOLD_TICK_VALUE = 100; // $100 per $1 move per lot (แก้ไขจาก $10 เป็น $100)
 
         function calculateSingleTrade() {
             const buyPrice = parseFloat(document.getElementById('buyPrice').value);
@@ -321,7 +321,7 @@
 
             // คำนวณกำไร/ขาดทุนปัจจุบัน
             const priceDiff = currentPrice - weightedAveragePrice;
-            const totalProfitLoss = priceDiff * (totalLots * 10) * GOLD_TICK_VALUE;
+            const totalProfitLoss = priceDiff * totalLots * GOLD_TICK_VALUE;
 
             // สร้างตาราง
             let tableHTML = `
@@ -332,7 +332,7 @@
                                 <th>ครั้งที่</th>
                                 <th>ราคาซื้อ ($)</th>
                                 <th>Lot</th>
-                                <th>เงินลงทุน ($)</th>
+                                <th>ราคาปัจจุบัน ($)</th>
                                 <th>P/L ปัจจุบัน ($)</th>
                             </tr>
                         </thead>
@@ -348,7 +348,7 @@
                         <td>${index + 1}</td>
                         <td>${trade.price.toFixed(2)}</td>
                         <td>${trade.lots}</td>
-                        <td>${trade.investment.toFixed(2)}</td>
+                        <td>${currentPrice.toFixed(2)}</td>
                         <td class="${profitLossClass}">${tradeProfitLoss.toFixed(2)}</td>
                     </tr>
                 `;
